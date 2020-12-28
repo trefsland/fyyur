@@ -48,7 +48,7 @@ class Venue(db.Model):
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
     seeking_description = db.Column(db.String(120))
     #past_shows =
-    upcoming_shows = db.Column(db.Integer)
+    upcoming_shows = db.Column(db.String(500))
     past_shows_count = db.Column(db.Integer)
     upcoming_shows_count = db.Column(db.Integer)
 
@@ -62,9 +62,16 @@ class Artist(db.Model):
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
+    website = db.Column(db.String(500))
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
+    seeking_description = db.Column(db.String(120))
+    #past_shows =
+    upcoming_shows = db.Column(db.String(500))
+    past_shows_count = db.Column(db.Integer)
+    upcoming_shows_count = db.Column(db.Integer)
 
 # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
