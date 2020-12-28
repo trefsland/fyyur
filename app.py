@@ -33,9 +33,10 @@ migrate = Migrate(app, db)
 #----------------------------------------------------------------------------#
 
 # Define association (aka secondary table)
-shows = db.Table('Shows',
+shows = db.Table('shows',
     db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True),
-    db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True)
+    db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True),
+    db.Column('start_time', db.DateTime(timezone=True))
 )
 
 class Venue(db.Model):
