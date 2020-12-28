@@ -22,6 +22,10 @@ moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
+# Instantiate migrate by defining migrate as an instance of the Migrate class,
+# linking to our flask app, as well as our SQLAlchemy db
+migrate = Migrate(app, db)
+
 # TODO: connect to a local postgresql database
 
 #----------------------------------------------------------------------------#
