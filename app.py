@@ -53,15 +53,12 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
-    seeking_description = db.Column(db.String())
+    seeking_description = db.Column(db.String(500))
     artists = db.relationship('Artist', secondary=shows,
         backref=db.backref('venues', lazy=True))
-    #past_shows =
-    #upcoming_shows =
-    #past_shows_count = db.Column(db.Integer)
-    #upcoming_shows_count = db.Column(db.Integer)
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    def __repr__(self):
+        return '<Venue {}>'.format(self.name)
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -76,15 +73,10 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
-    seeking_description = db.Column(db.String())
-    #past_shows =
-    #upcoming_shows =
-    #past_shows_count = db.Column(db.Integer)
-    #upcoming_shows_count = db.Column(db.Integer)
+    seeking_description = db.Column(db.String(500))
 
-# TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+    def __repr__(self):
+        return '<Artist {}>'.format(self.name)
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -493,11 +485,6 @@ def create_artist_submission():
     # on successful db insert, flash success
         flash('Artist ' + request.form['name'] + ' was successfully listed!')
     return render_template('pages/home.html')
-
-
-
-
-
 
 #  Shows
 #  ----------------------------------------------------------------
