@@ -246,10 +246,11 @@ def create_venue_form():
   form = VenueForm()
   return render_template('forms/new_venue.html', form=form)
 
+# validate_on_submit should be placed somewhere here
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
     error = False
-    body = {}
+
     try:
         venue = Venue(
             name = request.form['name'],
@@ -258,25 +259,26 @@ def create_venue_submission():
             address = request.form['address'],
             phone = request.form['phone'],
             genres = request.form.getlist('genres'),
-            facebook_link = request.form['facebook_link'])
+            image_link = request.form['image_link'],
+            facebook_link = request.form['facebook_link'],
+            website = request.form['website'],
+            seeking_talent = True if 'seeking_talent' in request.form else False,
+            seeking_description = request.form['seeking_description'])
         db.session.add(venue)
         db.session.commit()
     except():
         error = True
         db.session.rollback()
+        print(sys.exc_info())
     finally:
         db.session.close()
     if error:
-        # on unsuccessful db insert, flash an error instead.
-        flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
-        #abort(500)
-    else:
-        # on successful db insert, flash success
+    # on unsuccessful db insert, flash an error instead.
+        flash('An error occured. Venue ' + request.form['name'] + ' could not be listed.')
+    if not error:
+    # on successful db insert, flash success
         flash('Venue ' + request.form['name'] + ' was successfully listed!')
-        return render_template('pages/home.html')
-
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
+    return render_template('pages/home.html')
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
