@@ -44,7 +44,7 @@ class Venue(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    genres = db.Column(db.String(120))
+    genres = db.Column(db.ARRAY(db.String))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
@@ -53,7 +53,7 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
-    seeking_description = db.Column(db.String(120))
+    seeking_description = db.Column(db.String())
     artists = db.relationship('Artist', secondary=shows,
         backref=db.backref('venues', lazy=True))
     #past_shows =
@@ -251,24 +251,16 @@ def create_venue_submission():
     error = False
     body = {}
     try:
-        name = request.get_json()['name']
-        city = request.get_json()['city']
-        state = request.get_json()['state']
-        address = request.get_json()['address']
-        phone = request.get_json()['phone']
-        genres = request.get_json()['genres']
-        facebook_link = request.get_json()['facebook_link']
-        venue = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,facebook_link=facebook_link)
+        venue = Venue(
+            name = request.form['name'],
+            city = request.form['city'],
+            state = request.form['state'],
+            address = request.form['address'],
+            phone = request.form['phone'],
+            genres = request.form['genres'],
+            facebook_link = request.form['facebook_link'])
         db.session.add(venue)
         db.session.commit()
-        body['id'] = venue.id
-        body['name'] = venue.name
-        body['city'] = venue.city
-        body['state'] = venue.state
-        body['address'] = venue.address
-        body['phone'] = venue.phone
-        body['genres'] = venue.genres
-        body['facebook_link'] = venue.facebook_link
     except():
         error = True
         db.session.rollback()
@@ -282,7 +274,6 @@ def create_venue_submission():
     else:
         # on successful db insert, flash success
         flash('Venue ' + request.form['name'] + ' was successfully listed!')
-        return jsonify(body)
         return render_template('pages/home.html')
 
   # TODO: insert form data as a new Venue record in the db, instead
