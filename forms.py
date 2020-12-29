@@ -153,15 +153,24 @@ class ArtistForm(Form):
     phone = StringField(
         'phone', validators=[DataRequired(), validate_phone]
     )
-    image_link = StringField(
-        'image_link'
-    )
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],
         choices=genres_choices
     )
+    image_link = StringField(
+        'image_link'
+    )
     facebook_link = StringField(
         'facebook_link', validators=[URL()]
+    )
+    website = StringField(
+        'website', validators=[URL()]
+    )
+    seeking_venue = BooleanField(
+        'seeking_venue'
+    )
+    seeking_description = StringField(
+        'seeking_description'
     )
 
 # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
