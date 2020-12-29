@@ -4,3 +4,4 @@ flask-moment
 Flask-migrate
 flask_sqlalchemy
 flask-wtf
+psycopg2

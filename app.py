@@ -5,7 +5,7 @@
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, jsonify
 from flask_moment import Moment
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -57,7 +57,7 @@ class Venue(db.Model):
     artists = db.relationship('Artist', secondary=shows,
         backref=db.backref('venues', lazy=True))
     #past_shows =
-    upcoming_shows = db.Column(db.String(500))
+    #upcoming_shows =
     past_shows_count = db.Column(db.Integer)
     upcoming_shows_count = db.Column(db.Integer)
 
@@ -78,13 +78,11 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
     seeking_description = db.Column(db.String(120))
     #past_shows =
-    upcoming_shows = db.Column(db.String(500))
+    #upcoming_shows =
     past_shows_count = db.Column(db.Integer)
     upcoming_shows_count = db.Column(db.Integer)
 
 # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
-
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
@@ -250,15 +248,45 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
+    error = False
+    body = {}
+    try:
+        name = request.get_json()['name']
+        city = request.get_json()['city']
+        state = request.get_json()['state']
+        address = request.get_json()['address']
+        phone = request.get_json()['phone']
+        genres = request.get_json()['genres']
+        facebook_link = request.get_json()['facebook_link']
+        venue = Venue(name=name,city=city,state=state,address=address,phone=phone,genres=genres,facebook_link=facebook_link)
+        db.session.add(venue)
+        db.session.commit()
+        body['id'] = venue.id
+        body['name'] = venue.name
+        body['city'] = venue.city
+        body['state'] = venue.state
+        body['address'] = venue.address
+        body['phone'] = venue.phone
+        body['genres'] = venue.genres
+        body['facebook_link'] = venue.facebook_link
+    except():
+        error = True
+        db.session.rollback()
+    finally:
+        db.session.close()
+    if error:
+        # TODO: on unsuccessful db insert, flash an error instead.
+        flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
+        # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+        #abort(500)
+    else:
+        # on successful db insert, flash success
+        flash('Venue ' + request.form['name'] + ' was successfully listed!')
+        return jsonify(body)
+        return render_template('pages/home.html')
+
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
-
-  # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  return render_template('pages/home.html')
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
@@ -444,7 +472,7 @@ def create_artist_form():
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
   # called upon submitting the new artist listing form
-  # TODO: insert form data as a new Venue record in the db, instead
+  # TODO: insert form data as a new Artist record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
 
   # on successful db insert, flash success
