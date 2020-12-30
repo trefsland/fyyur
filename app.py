@@ -243,7 +243,7 @@ def create_venue_form():
   form = VenueForm()
   return render_template('forms/new_venue.html', form=form)
 
-# validate_on_submit should be placed somewhere here
+# VALIDATIONS DON'T WORK: validate_on_submit should be placed somewhere
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
     error = False
@@ -458,7 +458,7 @@ def create_artist_form():
   form = ArtistForm()
   return render_template('forms/new_artist.html', form=form)
 
-# validate_on_submit should be placed somewhere
+# VALIDATIONS DON'T WORK: validate_on_submit should be placed somewhere
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
     error = False
@@ -543,17 +543,31 @@ def create_shows():
   form = ShowForm()
   return render_template('forms/new_show.html', form=form)
 
+# VALIDATIONS DON'T WORK: validate_on_submit should be placed somewhere
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
-  # called to create new shows in the db, upon submitting new show listing form
-  # TODO: insert form data as a new Show record in the db, instead
+    error = False
 
-  # on successful db insert, flash success
-  flash('Show was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Show could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  return render_template('pages/home.html')
+    try:
+        show = Show(
+            artist_id = request.form['artist_id'],
+            venue_id = request.form['venue_id'],
+            start_time = request.form['start_time']
+        )
+        db.session.add(show)
+        db.session.commit()
+    except():
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        flash('An error occured. Show could not be listed.')
+    if not error:
+        flash('Show was successfully listed!')
+    return render_template('pages/home.html')
+
 
 @app.errorhandler(404)
 def not_found_error(error):
